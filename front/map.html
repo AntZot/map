@@ -52,6 +52,26 @@
         zoom: 3
       });
 
+      map.addControl(new maplibregl.GeolocateControl({
+        positionOptions: {
+          enableHighAccuracy: true
+          },
+          trackUserLocation: false
+          
+      }));
+
+      // navigator.geolocation.getCurrentPosition(
+      //   function(position){
+      //     var curr_lat = position.coords.latitude;
+      //     var curr_lng = position.coords.longitude;
+      //     map.setView([curr_lat, curr_lng], 14);
+      //   },
+
+      //   function(error){
+      //     map.setView([55.7422, 37.5719], 11);
+      //   }
+      //   );
+
       // Add the navigation control
       map.addControl(new maplibregl.NavigationControl());
     </script>
