@@ -1,0 +1,68 @@
+section{
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+  }
+  .main{
+    background-color: #fc5c65;
+  }
+  .news{
+    background-color:#2bcbba;
+  }
+  .contacts{
+    background-color: #fed330;
+  }
+  .portfolio{
+    background-color: #26de81;
+  }
+  .wrapper{
+    position: relative;/*потому что относительно него будем позиционировать меню и контент*/
+    overflow-x: hidden;/*скрываем скролл*/
+  }
+  .menu{
+    position: fixed;
+    z-index: 99;
+    left: 0; top: 0;
+    width: 30%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f7f1e3;
+    transition: 0.5s;
+    transform: translateX(-100%);/*hidden by default*/  
+  }
+  .menu_active{
+    transform: translateX(0%);
+  }
+  .menu-list{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 50%;/*От родителя*/
+    flex-direction: column;
+  }
+  .menu-list a{
+    text-decoration: none;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .menu-btn{
+    width: 30px;
+    height: 30px;
+    background-color: #a55eea;
+    position: absolute;
+    right: -35px;
+    top: 100px;
+  }
+  .content{
+    transition: 0.5s;
+    position: relative;
+    z-index: 0;
+  }
+  .content_active{
+    transform: translateX(30%);
+  }
+  

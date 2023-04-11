@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Leaflet Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin="" />
+    <style type="text/css">
+      @import url("front/style.css");
+      body{
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        width: 100vw;
+        height: 100vh;
+      }
+    </style>
+  </head>
+
+
+  <body>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>  
+    <script>
+
+      const map = L.map('map');
+      navigator.geolocation.getCurrentPosition(
+        function(position){
+          var curr_lat = position.coords.latitude;
+          var curr_lng = position.coords.longitude;
+          map.setView([curr_lat, curr_lng], 14);
+        },
+
+        function(error){
+          map.setView([55.7422, 37.5719], 11);
+        }
+        );
+      //map.setView([55.7422, 37.5719], 11);
+
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' }).addTo(map);
+      
+      const basemaps = {
+      StreetView: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',   {attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}),
+      Topography: L.tileLayer.wms('http://ows.mundialis.de/services/service?',   {layers: 'TOPO-WMS'}),
+      Places: L.tileLayer.wms('http://ows.mundialis.de/services/service?', {layers: 'OSM-Overlay-WMS'})
+      };
+
+      L.control.layers(basemaps).addTo(map);
+
+
+      var loc1,loc2;
+    function onMapClick(e) {
+        if (loc1 == null) {
+            loc1 = new L.marker(e.latlng, {draggable: 'true'});
+            loc1.on('dragend', function(event) {
+                sendPost();
+            });
+            map.addLayer(loc1);
+        }
+        else if (loc2 == null) {
+            loc2 = new L.marker(e.latlng, {draggable: 'true'});
+            loc2.on('dragend', function(event) {
+                sendPost();
+            });
+            map.addLayer(loc2);
+            sendPost();
+        }
+    }
+    ;
+    map.on('click', function(e) {
+        onMapClick(e);
+    });
+
+    var polyline;
+
+    async function sendPost() {
+        if (loc2 != null && loc1 != null) {
+            var p1 = loc1.getLatLng(),
+                p2 = loc2.getLatLng();
+
+            const params = `${p1.lng},${p1.lat};${p2.lng},${p2.lat}`
+            console.log(params)
+
+            // const response = await fetch("http://router.project-osrm.org/route/v1/driving/"+params, {
+            // method: "GET",
+            // });
+
+            const response = await fetch("/decode", {
+              method: "POST",
+              headers: { "Accept": "application/json", "Content-Type": "application/json" },
+              body: JSON.stringify({
+                params: params
+              })
+            });
+            data = await response.json()
+            if (data) {
+              if (polyline) {
+                  map.removeLayer(polyline);
+              }
+              var points = data;
+              console.log(points);
+              polyline = new L.polyline(points, {color: 'red'});
+              console.log(polyline);
+              map.addLayer(polyline);
+              map.fitBounds(polyline.getBounds());
+          }
+        }
+    }
+
+    //   //Создание метки
+    //   async function createMarker(e){
+
+    //     var new_mark = L.marker().setLatLng(e.latlng).addTo(map);
+    //     new_mark.dragging.disable();
+    //     new_mark.bindPopup("DoubleClick to delete");
+    //     var lat = e.latlng.lat.toFixed(4),
+    //         lng = e.latlng.lng.toFixed(4);
+
+    //     // отправляем запрос
+    //     const response = await fetch("/hello", {
+    //       method: "POST",
+    //       headers: { "Accept": "application/json", "Content-Type": "application/json" },
+    //       body: JSON.stringify({ 
+    //           lat: lat,
+    //           lng: lng
+    //        })
+    //     });
+    //     // Логируем
+    //     if (response.ok) {
+    //       const data = await response.json();
+    //       console.log(data);
+    //     }
+    //     else
+    //         console.log(response);
+    //   }
+    //   map.on('click', createMarker);
+
+    </script>
+
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script> <!-- JQUERY -->
+    <script src="front/scripts/menu.js"></script>
+    <div class="wrapper">
+      <div class="menu">
+        <a href="#" class="menu-btn">
+          <span></span>
+        </a>
+        <nav class="menu-list">
+          <a href="#">Главная</a>
+          <a href="#">Новости</a>
+          <a href="#">Контакты</a>
+          <a href="#">Портфолио</a>
+        </nav>
+      </div>
+      <div class="content">
+        <section class="main">
+          <h2>Главная</h2>
+        </section>
+        <section class="news">
+          <h2>Новости</h2>
+        </section>
+        <section class="contacts">
+          <h2>Контакты</h2>
+        </section>
+        <section class="portfolio">
+          <h2>Портфолио</h2>
+        </section>
+      </div>
+    </div>
+
+  </body>
+</html>
