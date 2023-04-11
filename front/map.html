@@ -2,10 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Leaflet Map</title>
+    <title>Tourist helper</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin="" />
+    <link id="favicon" rel="icon" type="image/x-icon" href="front/favicon.ico">
     <style type="text/css">
-      @import url("front/style.css");
+      /* @import url("front/style.css"); */
       body{
         margin: 0;
         padding: 0;
@@ -21,9 +22,12 @@
   <body>
     <div id="map"></div>
     <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>  
+    <script src="https://unpkg.com/leaflet-geosearch@3.1.0/dist/bundle.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@3.1.0/dist/geosearch.css"/>
     <script>
 
       const map = L.map('map');
+
       navigator.geolocation.getCurrentPosition(
         function(position){
           var curr_lat = position.coords.latitude;
@@ -40,10 +44,26 @@
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' }).addTo(map);
       
+
+
+      var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+      });
+      var Stamen_TonerLabels = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-labels/{z}/{x}/{y}{r}.{ext}', {
+        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        subdomains: 'abcd',
+        minZoom: 0,
+        maxZoom: 20,
+        ext: 'png'
+      });
+      var group = L.layerGroup([Esri_WorldImagery,Stamen_TonerLabels]);
       const basemaps = {
       StreetView: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',   {attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}),
-      Topography: L.tileLayer.wms('http://ows.mundialis.de/services/service?',   {layers: 'TOPO-WMS'}),
-      Places: L.tileLayer.wms('http://ows.mundialis.de/services/service?', {layers: 'OSM-Overlay-WMS'})
+      Topography: L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+	                              maxZoom: 17,
+	                              attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+                              }),
+      Стпутник: group,
       };
 
       L.control.layers(basemaps).addTo(map);
@@ -53,6 +73,7 @@
     function onMapClick(e) {
         if (loc1 == null) {
             loc1 = new L.marker(e.latlng, {draggable: 'true'});
+            loc1.bindPopup("<b>Hello world!</b><br>I am a popup.<input type=\"button\" onclick=\"window.open('https://google.com');\" value=\"Go to Google\" />")
             loc1.on('dragend', function(event) {
                 sendPost();
             });
@@ -108,6 +129,16 @@
         }
     }
 
+    const provider = new window.GeoSearch.OpenStreetMapProvider();
+    const search = new GeoSearch.GeoSearchControl({
+      provider: provider,
+      style: 'button',
+      updateMap: true,
+      autoClose: false,
+    });
+
+    map.addControl(search); 
+
     //   //Создание метки
     //   async function createMarker(e){
 
@@ -139,7 +170,7 @@
     </script>
 
     <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script> <!-- JQUERY -->
-    <script src="front/scripts/menu.js"></script>
+    <!-- <script src="front/scripts/menu.js"></script>
     <div class="wrapper">
       <div class="menu">
         <a href="#" class="menu-btn">
@@ -166,7 +197,7 @@
           <h2>Портфолио</h2>
         </section>
       </div>
-    </div>
+    </div> -->
 
   </body>
 </html>
