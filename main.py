@@ -5,6 +5,7 @@ from fastapi import responses
 import polyline
 import json
 import requests
+from recomendation_gen import recomendation 
 
 app = FastAPI()
  
@@ -37,3 +38,10 @@ def decode(data= Body()):
     res = requests.get("http://router.project-osrm.org/route/v1/driving/"+data["params"]+"?geometries=polyline&overview=full")
     js = json.loads(res.text)
     return polyline.decode(js['routes'][0]["geometry"])
+
+
+@app.post("/recomend")
+def recomend(data= Body()):
+    recom = recomendation()
+
+    return recom.get_recomendation()
