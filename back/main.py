@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Body
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi import responses
+from fastapi import responses 
 import polyline
 import json
 import requests
@@ -9,11 +9,13 @@ from recomendation_gen import recomendation
 
 app = FastAPI()
  
-app.mount("/front", StaticFiles(directory="front"),name="front")
+app.mount("/front", StaticFiles(directory="../front"),name="front")
+
+
 
 @app.get("/")
 def root():
-    return FileResponse("front/map.html")
+    return FileResponse("../front/map.html")
 
  
 @app.post("/hello")
@@ -22,8 +24,6 @@ def hello(data = Body()):
     name = data["lat"]
     age = data["lng"]
     return {"message": f"lng: {name}, lat: {age}"}
-
-
 
 
 """
@@ -40,6 +40,11 @@ def decode(data= Body()):
     return polyline.decode(js['routes'][0]["geometry"])
 
 
+"""
+    Создание рекомендаций и отправка их на фронтенд
+    data - список пар координат на основе которых создаются рекомендации 
+    
+"""
 @app.post("/recomend")
 def recomend(data= Body()):
     recom = recomendation()

@@ -45,7 +45,7 @@ L.control.layers(basemaps).addTo(map);
 var loc1,loc2;
 function onMapClick(e) {
     if (loc1 == null) {
-        loc1 = new L.marker(e.latlng, {draggable: 'true'});
+        loc1 = new L.marker(e.latlng, {draggable: true});
         loc1.bindPopup("<b>Hello world!</b><br>I am a popup.<input type=\"button\" onclick=\"window.open('https://google.com');\" value=\"Go to Google\" />")
         loc1.on('dragend', function(event) {
             sendPost();
@@ -53,7 +53,7 @@ function onMapClick(e) {
         map.addLayer(loc1);
     }
     else if (loc2 == null) {
-        loc2 = new L.marker(e.latlng, {draggable: 'true'});
+        loc2 = new L.marker(e.latlng, {draggable: true});
         loc2.on('dragend', function(event) {
             sendPost();
         });
@@ -116,7 +116,7 @@ async function sendPost() {
             if (recom_mark_list) {
                 map.removeLayer(recom_mark_list);
             }
-            recom_mark_list = new L.marker(recom_data[0][1], {draggable: 'false'});
+            recom_mark_list = new L.marker(recom_data[0][1],{draggable: false});
             recom_mark_list.bindPopup(`
             <b>${recom_data[0][0]}</b>
             <br>I am a popup.
@@ -126,14 +126,14 @@ async function sendPost() {
         }
 
     }
-}
-
+} 
 const provider = new window.GeoSearch.OpenStreetMapProvider();
 const search = new GeoSearch.GeoSearchControl({
 provider: provider,
 style: 'button',
 updateMap: true,
 autoClose: false,
+searchLabel: "Введите адрес"
 });
 
 map.addControl(search); 
