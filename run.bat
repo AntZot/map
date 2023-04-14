@@ -1,2 +1,1 @@
-cd back
-uvicorn main:app --reload
+uvicorn src.back.main:app --reload

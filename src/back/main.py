@@ -5,17 +5,17 @@ from fastapi import responses
 import polyline
 import json
 import requests
-from recomendation_gen import recomendation 
+from src.back.recomendation_gen import recomendation 
 
 app = FastAPI()
  
-app.mount("/front", StaticFiles(directory="../front"),name="front")
+app.mount("/front", StaticFiles(directory="front"),name="front")
 
 
 
 @app.get("/")
 def root():
-    return FileResponse("../front/map.html")
+    return FileResponse("front/map.html")
 
  
 @app.post("/hello")
@@ -35,8 +35,10 @@ def hello(data = Body()):
 """
 @app.post("/decode")
 def decode(data= Body()):
+    print(data)
     res = requests.get("http://router.project-osrm.org/route/v1/driving/"+data["params"]+"?geometries=polyline&overview=full")
     js = json.loads(res.text)
+    print(polyline.decode(js['routes'][0]["geometry"]))
     return polyline.decode(js['routes'][0]["geometry"])
 
 

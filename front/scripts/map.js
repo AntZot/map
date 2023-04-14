@@ -120,7 +120,7 @@ async function sendPost() {
             recom_mark_list.bindPopup(`
             <b>${recom_data[0][0]}</b>
             <br>I am a popup.
-            <input type=\"button\" onclick=\"window.open('https://google.com');\" value=\"Go to Google\" />
+            <input type=\"button\" onclick=\"window.open('${recom_data[0][2]}');\" value=\"Сайт\" />
             <input type=\"button\" onclick=\"window.open('https://google.com');\" value=\"Добавить в маршрут\" />`);
             map.addLayer(recom_mark_list);
         }
