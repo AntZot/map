@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Body
+from fastapi import FastAPI, Body, Response, status
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi import responses 
@@ -9,7 +9,7 @@ from src.back.recomendation_gen import recomendation
 
 app = FastAPI()
  
-app.mount("/front", StaticFiles(directory="front"),name="front")
+app.mount("/front", StaticFiles(directory="front"), name="front")
 
 
 
@@ -20,7 +20,7 @@ def root():
  
 @app.post("/hello")
 #def hello(name = Body(embed=True)):
-def hello(data = Body()):
+def get_coord(data = Body()):
     name = data["lat"]
     age = data["lng"]
     return {"message": f"lng: {name}, lat: {age}"}
@@ -33,13 +33,16 @@ def hello(data = Body()):
     overview = full|false|
 
 """
-@app.post("/decode")
-def decode(data= Body()):
-    print(data)
+@app.post("/decode",status_code=201)
+def decode(response: Response, data= Body()):
     res = requests.get("http://router.project-osrm.org/route/v1/driving/"+data["params"]+"?geometries=polyline&overview=full")
     js = json.loads(res.text)
-    print(polyline.decode(js['routes'][0]["geometry"]))
-    return polyline.decode(js['routes'][0]["geometry"])
+    if js["code"]=='NoRoute': 
+        resp = {"message":"Impossible route between points"}
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    else:
+        resp = polyline.decode(js['routes'][0]["geometry"])
+    return resp
 
 
 """
@@ -50,5 +53,4 @@ def decode(data= Body()):
 @app.post("/recomend")
 def recomend(data= Body()):
     recom = recomendation()
-
-    return recom.get_recomendation()
+    return responses.JSONResponse(content=recom.get_recomendation(data["params"]),media_type="application/json")

@@ -67,7 +67,7 @@ map.on('click', function(e) {
 });
 
 var polyline;
-var recom_mark_list;
+var recom_mark_list = [];
 
 async function sendPost() {
     if (loc2 != null && loc1 != null) {
@@ -111,18 +111,26 @@ async function sendPost() {
         });
         
         recom_data = await resp.json()
-        if (recom_data){
-            console.log(recom_data);
+        if (recom_data) {
             if (recom_mark_list) {
-                map.removeLayer(recom_mark_list);
+                while(recom_mark_list.length){
+                    map.removeLayer(recom_mark_list.pop());
+                }
             }
-            recom_mark_list = new L.marker(recom_data[0][1],{draggable: false});
-            recom_mark_list.bindPopup(`
-            <b>${recom_data[0][0]}</b>
-            <br>I am a popup.
-            <input type=\"button\" onclick=\"window.open('${recom_data[0][2]}');\" value=\"Сайт\" />
-            <input type=\"button\" onclick=\"window.open('https://google.com');\" value=\"Добавить в маршрут\" />`);
-            map.addLayer(recom_mark_list);
+            var rec = JSON.parse(recom_data);
+            for (let i = 0; i < rec["data"].length; i++) { 
+                console.log(rec["data"][i])
+                recm = rec["data"][i]
+                recom_mark = new L.marker([recm[3],recm[2]],{draggable: false});
+                recom_mark.bindPopup(`
+                <b>${recm[0]}</b>
+                <br>${recm[1]}
+                <input type=\"button\" onclick=\"window.open('https://google.com');\" value=\"Добавить в маршрут\" />`);
+                recom_mark_list.push(recom_mark);
+                map.addLayer(recom_mark);
+            }
+
+
         }
 
     }

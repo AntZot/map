@@ -1,1 +1,2 @@
-uvicorn main:app --reload
+#! /usr/bin/bash
+uvicorn src.back.main:app --reload
