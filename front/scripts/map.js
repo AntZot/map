@@ -43,6 +43,7 @@ L.control.layers(basemaps).addTo(map);
 
 
 var loc1,loc2;
+var points_list = [];
 function onMapClick(e) {
     if (loc1 == null) {
         loc1 = new L.marker(e.latlng, {draggable: true});
@@ -125,7 +126,7 @@ async function sendPost() {
                 recom_mark.bindPopup(`
                 <b>${recm[0]}</b>
                 <br>${recm[1]}
-                <input type=\"button\" onclick=\"window.open('https://google.com');\" value=\"Добавить в маршрут\" />`);
+                <input type=\"button\" onclick=\"add_point_to_road()\" value=\"Добавить в маршрут\" />`);
                 recom_mark_list.push(recom_mark);
                 map.addLayer(recom_mark);
             }
@@ -135,6 +136,12 @@ async function sendPost() {
 
     }
 } 
+
+function add_point_to_road() {
+    console.log("Я вызвалось")
+    points_list.push([recm[3],recm[2]])
+    sendPost()
+}
 const provider = new window.GeoSearch.OpenStreetMapProvider();
 const search = new GeoSearch.GeoSearchControl({
 provider: provider,

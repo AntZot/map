@@ -11,7 +11,11 @@ app = FastAPI()
  
 app.mount("/front", StaticFiles(directory="front"), name="front")
 
+startup_data = {}
 
+@app.on_event("startup")
+async def startup_event():
+    startup_data["rec"] = recomendation()
 
 @app.get("/")
 def root():
@@ -52,5 +56,5 @@ def decode(response: Response, data= Body()):
 """
 @app.post("/recomend")
 def recomend(data= Body()):
-    recom = recomendation()
-    return responses.JSONResponse(content=recom.get_recomendation(data["params"]),media_type="application/json")
+    content = startup_data["rec"].get_recomendation(data["params"])
+    return responses.JSONResponse(content=content,media_type="application/json")
