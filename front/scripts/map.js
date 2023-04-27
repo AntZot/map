@@ -10,9 +10,7 @@ navigator.geolocation.getCurrentPosition(
 
     function(error){
     map.setView([55.7422, 37.5719], 11);
-    }
-    );
-//map.setView([55.7422, 37.5719], 11);
+    });
 
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' }).addTo(map);
@@ -42,46 +40,44 @@ Topography: L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
 L.control.layers(basemaps).addTo(map);
 
 
-var loc1,loc2;
-var points_list = [];
+var points_list = {};
+
+//переделывается wip
 function onMapClick(e) {
-    if (loc1 == null) {
+    if(Object.keys(points_list).length<2){
         loc1 = new L.marker(e.latlng, {draggable: true});
-        loc1.bindPopup("<b>Hello world!</b><br>I am a popup.<input type=\"button\" onclick=\"window.open('https://google.com');\" value=\"Go to Google\" />")
         loc1.on('dragend', function(event) {
+            var changedPos = event.target.getLatLng();
+            points_list[event.target._leaflet_id] = [changedPos["lat"],changedPos["lng"]]
             sendPost();
         });
         map.addLayer(loc1);
+        points_list[loc1._leaflet_id] = [e.latlng["lat"],e.latlng["lng"]];
     }
-    else if (loc2 == null) {
-        loc2 = new L.marker(e.latlng, {draggable: true});
-        loc2.on('dragend', function(event) {
-            sendPost();
-        });
-        map.addLayer(loc2);
-        sendPost();
+    if (Object.keys(points_list).length>=2){
+        sendPost()
     }
-}
-;
+    
+};
 map.on('click', function(e) {
     onMapClick(e);
 });
 
 var polyline;
-var recom_mark_list = [];
+var recom_mark_list = {};
+var counter = 0
 
 async function sendPost() {
-    if (loc2 != null && loc1 != null) {
-        var p1 = loc1.getLatLng(),
-            p2 = loc2.getLatLng();
-
-        const params = `${p1.lng},${p1.lat};${p2.lng},${p2.lat}`
-        console.log(params)
-
-        // const response = await fetch("http://router.project-osrm.org/route/v1/driving/"+params, {
-        // method: "GET",
-        // });
-
+    if (Object.keys(points_list).length >= 2) {
+        point_keys_list = Object.keys(points_list);
+        //Передалть просто под список координат
+        params = ''
+        params = params + `${points_list[point_keys_list[0]][1]},${points_list[point_keys_list[0]][0]}`
+        for (let i = 1; i < Object.keys(points_list).length; i++){
+            params = params + ";"
+            params = params + `${points_list[point_keys_list[i]][1]},${points_list[point_keys_list[i]][0]}`
+        }
+        //------------------------------------------------------------
         const response = await fetch("/decode", {
         method: "POST",
         headers: { "Accept": "application/json", "Content-Type": "application/json" },
@@ -107,15 +103,19 @@ async function sendPost() {
             method: "POST",
             headers: { "Accept": "application/json", "Content-Type": "application/json" },
             body: JSON.stringify({
-            params: data
+            params: params,
+            data: data
             })
         });
         
         recom_data = await resp.json()
         if (recom_data) {
-            if (recom_mark_list) {
-                while(recom_mark_list.length){
-                    map.removeLayer(recom_mark_list.pop());
+            if (Object.keys(recom_mark_list).length>0) {
+                rec_keys = Object.keys(recom_mark_list)
+                iter = Object.keys(recom_mark_list).length
+                for (let i = 0; i < iter; i++){
+                    map.removeLayer(recom_mark_list[rec_keys[i]]);
+                    delete recom_mark_list[rec_keys[i]]
                 }
             }
             var rec = JSON.parse(recom_data);
@@ -123,12 +123,12 @@ async function sendPost() {
                 console.log(rec["data"][i])
                 recm = rec["data"][i]
                 recom_mark = new L.marker([recm[3],recm[2]],{draggable: false});
+                map.addLayer(recom_mark);
                 recom_mark.bindPopup(`
                 <b>${recm[0]}</b>
                 <br>${recm[1]}
-                <input type=\"button\" onclick=\"add_point_to_road()\" value=\"Добавить в маршрут\" />`);
-                recom_mark_list.push(recom_mark);
-                map.addLayer(recom_mark);
+                <input id = ${recom_mark._leaflet_id} type=\"button\" onclick=\"add_point_to_road(this); \" value=\"Добавить в маршрут\" />`);
+                recom_mark_list[recom_mark._leaflet_id] = recom_mark;
             }
 
 
@@ -137,9 +137,12 @@ async function sendPost() {
     }
 } 
 
-function add_point_to_road() {
-    console.log("Я вызвалось")
-    points_list.push([recm[3],recm[2]])
+function add_point_to_road(recom_mark) {
+    debugger
+    console.log(recom_mark)
+    mrk = recom_mark_list[recom_mark.id].getLatLng()
+    points_list[recom_mark.id] = [mrk["lat"],mrk["lng"]]
+    delete recom_mark_list[recom_mark.id]
     sendPost()
 }
 const provider = new window.GeoSearch.OpenStreetMapProvider();

@@ -6,7 +6,7 @@ class recomendation():
     def __init__(self) -> None:
         self.data_LandMark = pd.read_csv("test_feature/best_places_copy.csv",sep=";")
     
-    def get_recomendation(self,query,max_req=0):
+    def get_recomendation(self,query,points,max_req=0):
         best_distance=0.02
 
         np_data= np.array(query)
