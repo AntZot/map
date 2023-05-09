@@ -7,6 +7,9 @@ import json
 import requests
 from src.back.recomendation_gen import recomendation 
 
+OSRM_API_URL = "http://router.project-osrm.org/route/v1/driving/"
+
+
 app = FastAPI()
  
 app.mount("/front", StaticFiles(directory="front"), name="front")
@@ -39,7 +42,7 @@ def get_coord(data = Body()):
 """
 @app.post("/decode",status_code=201)
 def decode(response: Response, data= Body()):
-    res = requests.get("http://router.project-osrm.org/route/v1/driving/"+data["params"]+"?geometries=polyline&overview=full")
+    res = requests.get(OSRM_API_URL+data["params"]+"?geometries=polyline&overview=full")
     js = json.loads(res.text)
     if js["code"]=='NoRoute': 
         resp = {"message":"Impossible route between points"}
