@@ -17,6 +17,7 @@ startup_data = {}
 async def startup_event():
     startup_data["rec"] = recomendation()
 
+
 @app.get("/")
 def root():
     return FileResponse("front/map.html")
