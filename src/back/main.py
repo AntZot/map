@@ -20,6 +20,7 @@ startup_data = {}
 async def startup_event():
     startup_data["rec"] = recomendation()
 
+
 @app.get("/")
 def root():
     return FileResponse("front/map.html")
@@ -42,6 +43,7 @@ def get_coord(data = Body()):
 """
 @app.post("/decode",status_code=201)
 def decode(response: Response, data= Body()):
+
     res = requests.get(OSRM_API_URL+data["params"]+"?geometries=polyline&overview=full")
     js = json.loads(res.text)
     if js["code"]=='NoRoute': 
@@ -59,5 +61,5 @@ def decode(response: Response, data= Body()):
 """
 @app.post("/recomend")
 def recomend(data= Body()):
-    content = startup_data["rec"].get_recomendation(data["params"])
+    content = startup_data["rec"].get_recomendation(data["data"],data["params"])
     return responses.JSONResponse(content=content,media_type="application/json")
