@@ -44,7 +44,7 @@ def get_coord(data = Body()):
 @app.post("/decode",status_code=201)
 def decode(response: Response, data= Body()):
 
-    res = requests.get(OSRM_API_URL+data["params"]+"?geometries=polyline&overview=full")
+    res = requests.get(OSRM_API_URL+data["params"]+"?geometries=polyline&overview=full") 
     js = json.loads(res.text)
     if js["code"]=='NoRoute': 
         resp = {"message":"Impossible route between points"}
