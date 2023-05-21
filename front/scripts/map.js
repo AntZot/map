@@ -68,7 +68,6 @@ var last_point_lists_lenght = 0;
 
 //переделывается wip
 function onMapClick(e) {
-    debugger
     if (Object.keys(points_list).length==0){
         loc1 = new L.marker(e.latlng, {draggable: true, icon: greenIcon});
     }
@@ -109,27 +108,20 @@ map.on('dblclick', function(e) {
 var polyline;
 var recom_mark_list = {};
 var counter = 0
+var mark_button_state = {}
 
 //Отправка запроса на создание маршрута и рекомендаций
 async function sendPost() {
     if (Object.keys(points_list).length >= 2) {
         point_keys_list = Object.keys(points_list);
-        //Передалть просто под список координат
-        params = ''
-        //params = [points_list[point_keys_list[0]][1],points_list[point_keys_list[0]][0]]
-        params = params + `${points_list[point_keys_list[0]][1]},${points_list[point_keys_list[0]][0]}`
-        for (let i = 1; i < Object.keys(points_list).length; i++){
-            params = params + ";"
-            params = params + `${points_list[point_keys_list[i]][1]},${points_list[point_keys_list[i]][0]}`
-        }
-        //------------------------------------------------------------
         const response = await fetch("/decode", {
         method: "POST",
         headers: { "Accept": "application/json", "Content-Type": "application/json" },
         body: JSON.stringify({
-            params: params
+            params: Object.values(points_list)
         })
         });
+
         data = await response.json()
         if (data) {
                 if (polyline) {
@@ -149,7 +141,7 @@ async function sendPost() {
             method: "POST",
             headers: { "Accept": "application/json", "Content-Type": "application/json" },
             body: JSON.stringify({
-            params: params,
+            params: Object.values(points_list),
             data: data
             })
         });
@@ -174,9 +166,14 @@ async function sendPost() {
                 <b>${recm[0]}</b>
                 <br>${recm[1]}
                 <br><input id = ${recom_mark._leaflet_id} type=\"button\" onclick=\"add_point_to_road(this); \" value=\"Добавить в маршрут\" />
-                <input id = ${recom_mark._leaflet_id}_d type=\"button\" onclick=\"delete_point_on_road(this); \" value=\"Удалить из маршрута\" disabled/>`);
+                <input id = ${recom_mark._leaflet_id}_d type=\"button\" onclick=\"delete_point_on_road(this); \" value=\"Удалить из маршрута\" />`);
                 recom_mark_list[recom_mark._leaflet_id] = recom_mark;
-                console.log(`${recom_mark._leaflet_id}_d`);  
+                mark_button_state[recom_mark._leaflet_id]= [false,true]
+                recom_mark.on("click", function(){
+                    document.getElementById(`${this._leaflet_id}`).disabled = mark_button_state[this._leaflet_id][0];
+                    document.getElementById(`${this._leaflet_id}_d`).disabled = mark_button_state[this._leaflet_id][1];
+                })
+                console.log(`${recom_mark._leaflet_id}_d`); 
             }
 
 
@@ -191,6 +188,7 @@ function add_point_to_road(recom_mark) {
     mrk = recom_mark_list[recom_mark.id].getLatLng()
     points_list[recom_mark.id] = [mrk["lat"],mrk["lng"]]
     delete recom_mark_list[recom_mark.id]
+    mark_button_state[recom_mark.id]= [true,false]
     document.getElementById(`${recom_mark.id}`).disabled = true;
     document.getElementById(`${recom_mark.id}_d`).disabled = false;  
     sendPost()
@@ -198,12 +196,23 @@ function add_point_to_road(recom_mark) {
 
 //Удаление метки
 function delete_point_on_road(mark){
-    // sendPost()
+    mark_id = +mark.id.slice(0,-2)
+
+    delete points_list[mark_id]
+
+    console.log(mark_id)
+    console.log(map._targets[mark.id.slice(0,-2)])
+
+    recom_mark_list[mark_id] = map._targets[mark_id+1] 
+    mark_button_state[mark_id]= [false,true]
+    document.getElementById(`${mark_id}`).disabled = false;
+    document.getElementById(`${mark.id}`).disabled = true;
+    
+    sendPost()
 }
 
 //Поисковая строка
 const provider = new window.GeoSearch.OpenStreetMapProvider();
-debugger
 const search = new GeoSearch.GeoSearchControl({
 provider: provider,
 style: 'button',
