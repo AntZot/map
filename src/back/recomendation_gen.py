@@ -19,14 +19,14 @@ class recomendation():
 
         :rec_distance: distance to L1 norm
         """
-        print(points)
-        np_data= np.array(query)
+        data= np.array(query)
+        points = np.array(points)
         #Чтение датасета мест
         np_landmark = self.data_LandMark[["ltd","lng"]].to_numpy()
 
 
 
-        data_dist = cdist(np_data,np_landmark,metric="euclidean")
+        data_dist = cdist(data,np_landmark,metric="euclidean")
 
         norm=[]
         for i in np.unique(np.where(data_dist<rec_distance)[1]):    
@@ -40,6 +40,8 @@ class recomendation():
         сделать проверку на уже существующие поинты
         
         """
+        mask = np.round(sliced_data['lng'],4).isin(np.round(points[:,1],4)) & np.round(sliced_data['ltd'],4).isin(np.round(points[:,0],4))
+        sliced_data = sliced_data[~mask]
 
         return sliced_data[["Places","Addres","lng","ltd"]][0:5].to_json(orient="split",force_ascii=False,index=False)
 

@@ -1,68 +1,41 @@
-section{
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #fff;
+body{
+  margin: 0;
+  padding: 0;
+}
+#map {
+  /* top: 56px; */
+  width: 100vw;
+  height: 100vh;
+  /* height: 92vh; */
+}
+@media (max-width: 1000px){
+  /* .leaflet-bar a, .leaflet-bar a:hover{
+    background-color: #f1f;
+  } */
+  .leaflet-touch .leaflet-bar a {
+    width: 90px;
+    height: 90px;
+    line-height: 90px;
   }
-  .main{
-    background-color: #fc5c65;
+  .leaflet-control-geosearch a.leaflet-bar-part:after{
+    top: 29px !important;
+    left: 28px !important;
+    height: 24px !important;
+    width: 24px !important;
+    border-radius: 50% !important;
+    border: 3px solid #555 !important;
   }
-  .news{
-    background-color:#2bcbba;
+  /* top: 8px;
+    left: 8px;
+    height: 8px;
+    width: 8px;
+    border-radius: 50%;
+    border: 2px solid #555; */
+  .leaflet-control-geosearch a.leaflet-bar-part:before {
+    top: 53px !important;
+    left: 45px !important;
+    width: 18px !important;
+    border-top: 3px solid #555 !important;
+    transform: rotateZ(45deg);
   }
-  .contacts{
-    background-color: #fed330;
-  }
-  .portfolio{
-    background-color: #26de81;
-  }
-  .wrapper{
-    position: relative;/*потому что относительно него будем позиционировать меню и контент*/
-    overflow-x: hidden;/*скрываем скролл*/
-  }
-  .menu{
-    position: fixed;
-    z-index: 99;
-    left: 0; top: 0;
-    width: 30%;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #f7f1e3;
-    transition: 0.5s;
-    transform: translateX(-100%);/*hidden by default*/  
-  }
-  .menu_active{
-    transform: translateX(0%);
-  }
-  .menu-list{
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    height: 50%;/*От родителя*/
-    flex-direction: column;
-  }
-  .menu-list a{
-    text-decoration: none;
-    text-transform: uppercase;
-    font-weight: 700;
-  }
-  .menu-btn{
-    width: 30px;
-    height: 30px;
-    background-color: #a55eea;
-    position: absolute;
-    right: -35px;
-    top: 100px;
-  }
-  .content{
-    transition: 0.5s;
-    position: relative;
-    z-index: 0;
-  }
-  .content_active{
-    transform: translateX(30%);
-  }
-  
+}

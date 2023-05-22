@@ -6,7 +6,8 @@ import polyline
 import json
 import requests
 from src.back.recomendation_gen import recomendation 
-
+from operator import itemgetter
+import numpy as np
 OSRM_API_URL = "http://router.project-osrm.org/route/v1/driving/"
 
 
@@ -27,7 +28,6 @@ def root():
 
  
 @app.post("/hello")
-#def hello(name = Body(embed=True)):
 def get_coord(data = Body()):
     name = data["lat"]
     age = data["lng"]
@@ -43,8 +43,23 @@ def get_coord(data = Body()):
 """
 @app.post("/decode",status_code=201)
 def decode(response: Response, data= Body()):
+    params = ''
+    points = data['params']
+    points_var = np.var(np.array(points),axis=0,dtype=np.float64)
+    print("     "+ f"{points_var}")
+    if points_var[0] > points_var[1]:
+        points = sorted(points,reverse=True) 
+    else:
+        points = sorted(points, key=itemgetter(1))
 
-    res = requests.get(OSRM_API_URL+data["params"]+"?geometries=polyline&overview=full") 
+    #Сборка строки для отправки запросса API
+    for count, point in enumerate(points):
+        params += f"{point[1]},{point[0]}"
+        if(count != (len(points)-1)):
+            params += ";"
+    print("     "+params)
+
+    res = requests.get(OSRM_API_URL+params+"?geometries=polyline&overview=full") 
     js = json.loads(res.text)
     if js["code"]=='NoRoute': 
         resp = {"message":"Impossible route between points"}
