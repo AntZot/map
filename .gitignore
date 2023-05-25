@@ -161,3 +161,8 @@ cython_debug/
 
 test_feature/best_places.xlsx
 test_feature/data-51-structure-6.csv
+
+#CatBoost 
+
+test_feature/catboost_info
+test_feature/model

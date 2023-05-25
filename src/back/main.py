@@ -8,6 +8,8 @@ import requests
 from src.back.recomendation_gen import recomendation 
 from operator import itemgetter
 import numpy as np
+
+
 OSRM_API_URL = "http://router.project-osrm.org/route/v1/driving/"
 
 
