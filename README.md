@@ -12,10 +12,17 @@ Python 3.9+
 ## Installation
 
 <div class="termy">
+Clone app on your PC:
+  
+```console
+$ git clone git@github.com:AntZot/map.git 
+```
+Before run the application, you need to install dependencies:
 
 ```console
 $ pip install -r requirements.txt 
 ```
+
 </div>
 
 ## Run Application
