@@ -1,11 +1,11 @@
 from fastapi import FastAPI, Body, Response, status
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-# from fastapi import responses 
+from fastapi import responses 
 import polyline
 import json
 import requests
-# from recomendation_gen import recomendation 
+from recomendation_gen import recomendation 
 from operator import itemgetter
 import numpy as np
 import uvicorn
@@ -20,9 +20,9 @@ app.mount("/front", StaticFiles(directory="front"), name="front")
 
 startup_data = {}
 
-# @app.on_event("startup")
-# async def startup_event():
-#     startup_data["rec"] = recomendation()
+@app.on_event("startup")
+async def startup_event():
+    startup_data["rec"] = recomendation()
 
 
 @app.get("/")
@@ -69,10 +69,10 @@ def decode(response: Response, data= Body()):
 #     data - список пар координат на основе которых создаются рекомендации 
     
 # """
-# @app.post("/recomend")
-# def recomend(data= Body()):
-#     content = startup_data["rec"].get_recomendation(data["data"],data["params"])
-#     return responses.JSONResponse(content=content,media_type="application/json")
+@app.post("/recomend")
+def recomend(data= Body()):
+    content = startup_data["rec"].get_recomendation(data["data"],data["params"])
+    return responses.JSONResponse(content=content,media_type="application/json")
 
 
 if __name__ == "__main__":
