@@ -5,9 +5,10 @@ from fastapi import responses
 import polyline
 import json
 import requests
-from src.back.recomendation_gen import recomendation 
+from recomendation_gen import recomendation 
 from operator import itemgetter
 import numpy as np
+import uvicorn
 
 
 OSRM_API_URL = "http://router.project-osrm.org/route/v1/driving/"
@@ -80,3 +81,7 @@ def decode(response: Response, data= Body()):
 def recomend(data= Body()):
     content = startup_data["rec"].get_recomendation(data["data"],data["params"])
     return responses.JSONResponse(content=content,media_type="application/json")
+
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
