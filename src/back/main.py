@@ -2,12 +2,12 @@ from fastapi import FastAPI, Body, Response, status
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 # from fastapi import responses 
-# import polyline
-# import json
-# import requests
+import polyline
+import json
+import requests
 # from recomendation_gen import recomendation 
-# from operator import itemgetter
-# import numpy as np
+from operator import itemgetter
+import numpy as np
 import uvicorn
 
 
@@ -36,32 +36,32 @@ def root():
     overview = full|false|
 
 """
-# @app.post("/decode",status_code=201)
-# def decode(response: Response, data= Body()):
-#     params = ''
-#     points = data['params']
-#     points_var = np.var(np.array(points),axis=0,dtype=np.float64)
-#     print("     "+ f"{points_var}")
-#     if points_var[0] > points_var[1]:
-#         points = sorted(points,reverse=True) 
-#     else:
-#         points = sorted(points, key=itemgetter(1))
+@app.post("/decode",status_code=201)
+def decode(response: Response, data= Body()):
+    params = ''
+    points = data['params']
+    points_var = np.var(np.array(points),axis=0,dtype=np.float64)
+    print("     "+ f"{points_var}")
+    if points_var[0] > points_var[1]:
+        points = sorted(points,reverse=True) 
+    else:
+        points = sorted(points, key=itemgetter(1))
 
-#     #Сборка строки для отправки запросса API
-#     for count, point in enumerate(points):
-#         params += f"{point[1]},{point[0]}"
-#         if(count != (len(points)-1)):
-#             params += ";"
-#     print("     "+params)
+    #Сборка строки для отправки запросса API
+    for count, point in enumerate(points):
+        params += f"{point[1]},{point[0]}"
+        if(count != (len(points)-1)):
+            params += ";"
+    print("     "+params)
 
-#     res = requests.get(OSRM_API_URL+params+"?geometries=polyline&overview=full") 
-#     js = json.loads(res.text)
-#     if js["code"]=='NoRoute': 
-#         resp = {"message":"Impossible route between points"}
-#         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-#     else:
-#         resp = polyline.decode(js['routes'][0]["geometry"])
-#     return resp
+    res = requests.get(OSRM_API_URL+params+"?geometries=polyline&overview=full") 
+    js = json.loads(res.text)
+    if js["code"]=='NoRoute': 
+        resp = {"message":"Impossible route between points"}
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    else:
+        resp = polyline.decode(js['routes'][0]["geometry"])
+    return resp
 
 
 # """
