@@ -1,9 +1,10 @@
 import pandas as pd
 import numpy as np
-from scipy.spatial.distance import cdist
+#from scipy.spatial.distance import cdist
 from typing import List
 
 class recomendation():
+    
     def __init__(self) -> None:
         self.data_LandMark = pd.read_csv("test_feature/best_places_copy.csv",sep=";")
     
