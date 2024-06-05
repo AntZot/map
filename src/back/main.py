@@ -10,14 +10,14 @@ import numpy as np
 import uvicorn
 from typing import List
 import pandas as pd
-
+from contextlib import asynccontextmanager
 
 OSRM_API_URL = "http://router.project-osrm.org/route/v1/driving/"
 
 class recomendation():
     
     def __init__(self) -> None:
-        self.data_LandMark = pd.read_csv("best_places_copy.csv",sep=";")
+        self.data_LandMark = pd.read_csv("src//back//best_places_copy.csv",sep=";")
         print(self.data_LandMark.shape)
     
     def get_recomendation(self, query:List[List[float]], points: List[List[float]], max_rec:int = 0,rec_distance:float = 0.02):
@@ -62,17 +62,17 @@ class recomendation():
 
         return sliced_data[["Places","Addres","lng","ltd"]][0:5].to_json(orient="split",force_ascii=False,index=False)
 
+startup_data = {}
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    startup_data["rec"] = recomendation()
+    yield
+    startup_data.clear()
 
-
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
  
 app.mount("/front", StaticFiles(directory="front"), name="front")
 
-startup_data = {}
-
-@app.on_event("startup")
-async def startup_event():
-    startup_data["rec"] = recomendation()
 
 
 @app.get("/")
