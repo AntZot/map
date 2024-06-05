@@ -17,7 +17,8 @@ OSRM_API_URL = "http://router.project-osrm.org/route/v1/driving/"
 class recomendation():
     
     def __init__(self) -> None:
-        self.data_LandMark = pd.read_csv("test_feature/best_places_copy.csv",sep=";")
+        self.data_LandMark = pd.read_csv("best_places_copy.csv",sep=";")
+        print(self.data_LandMark.shape)
     
     def get_recomendation(self, query:List[List[float]], points: List[List[float]], max_rec:int = 0,rec_distance:float = 0.02):
         """
