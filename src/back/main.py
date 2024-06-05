@@ -69,10 +69,10 @@ def decode(response: Response, data= Body()):
 #     data - список пар координат на основе которых создаются рекомендации 
     
 # """
-@app.post("/recomend")
-def recomend(data= Body()):
-    content = startup_data["rec"].get_recomendation(data["data"],data["params"])
-    return responses.JSONResponse(content=content,media_type="application/json")
+# @app.post("/recomend")
+# def recomend(data= Body()):
+#     content = startup_data["rec"].get_recomendation(data["data"],data["params"])
+#     return responses.JSONResponse(content=content,media_type="application/json")
 
 
 if __name__ == "__main__":
