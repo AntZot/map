@@ -32,20 +32,25 @@ class recomendation():
         :rec_distance: distance to L1 norm
         """
         data= np.array(query)
+        print(data.shape)
         points = np.array(points)
         #Чтение датасета мест
         np_landmark = self.data_LandMark[["ltd","lng"]].to_numpy()
+        path_point = []
+        for i in data:
+            land_metric = []
+            for j in np_landmark:
+                land_metric.append(np.sqrt(sum(pow(a-b, 2) for a, b in zip(i, j))))
+            path_point.append(land_metric)
+        data_dist = np.array(path_point)
 
-
-
-        data_dist = np.array([])#cdist(data,np_landmark,metric="euclidean")
-
+        print(data_dist.shape)
         norm=[]
         for i in np.unique(np.where(data_dist<rec_distance)[1]):    
             norm.append(np.min(data_dist[:,i]))
-            sliced_data = self.data_LandMark.iloc[np.unique(np.where(data_dist<rec_distance)[1])]
-            sliced_data["dist"] = norm
-            sliced_data.sort_values(by='dist')
+        sliced_data = self.data_LandMark.iloc[np.unique(np.where(data_dist<rec_distance)[1])]
+        sliced_data["dist"] = norm
+        sliced_data.sort_values(by='dist')
 
         """
         сделать проверку на уже существующие поинты
@@ -113,10 +118,10 @@ def decode(response: Response, data= Body()):
 #     data - список пар координат на основе которых создаются рекомендации 
     
 # """
-# @app.post("/recomend")
-# def recomend(data= Body()):
-#     content = startup_data["rec"].get_recomendation(data["data"],data["params"])
-#     return responses.JSONResponse(content=content,media_type="application/json")
+@app.post("/recomend")
+def recomend(data= Body()):
+    content = startup_data["rec"].get_recomendation(data["data"],data["params"])
+    return responses.JSONResponse(content=content,media_type="application/json")
 
 
 if __name__ == "__main__":
