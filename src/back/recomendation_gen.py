@@ -31,10 +31,9 @@ class recomendation():
         norm=[]
         for i in np.unique(np.where(data_dist<rec_distance)[1]):    
             norm.append(np.min(data_dist[:,i]))
-        
-        sliced_data = self.data_LandMark.iloc[np.unique(np.where(data_dist<rec_distance)[1])]
-        sliced_data["dist"] = norm
-        sliced_data.sort_values(by='dist')
+            sliced_data = self.data_LandMark.iloc[np.unique(np.where(data_dist<rec_distance)[1])]
+            sliced_data["dist"] = norm
+            sliced_data.sort_values(by='dist')
 
         """
         сделать проверку на уже существующие поинты

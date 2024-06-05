@@ -20,9 +20,9 @@ app.mount("/front", StaticFiles(directory="front"), name="front")
 
 startup_data = {}
 
-@app.on_event("startup")
-async def startup_event():
-    startup_data["rec"] = recomendation()
+# @app.on_event("startup")
+# async def startup_event():
+#     startup_data["rec"] = recomendation()
 
 
 @app.get("/")
