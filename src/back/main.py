@@ -5,7 +5,7 @@ from fastapi import responses
 import polyline
 import json
 import requests
-from recomendation_gen import recomendation 
+#from recomendation_gen import recomendation 
 from operator import itemgetter
 import numpy as np
 import uvicorn
