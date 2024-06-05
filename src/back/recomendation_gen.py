@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-#from scipy.spatial.distance import cdist
+from scipy.spatial.distance import cdist
 from typing import List
 
 class recomendation():
@@ -27,7 +27,7 @@ class recomendation():
 
 
 
-        data_dist = cdist(data,np_landmark,metric="euclidean")
+        data_dist = np.array([])#cdist(data,np_landmark,metric="euclidean")
 
         norm=[]
         for i in np.unique(np.where(data_dist<rec_distance)[1]):    
