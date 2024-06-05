@@ -13,6 +13,7 @@ import pandas as pd
 from contextlib import asynccontextmanager
 
 OSRM_API_URL = "http://router.project-osrm.org/route/v1/driving/"
+startup_data = {}
 
 class recomendation():
     
@@ -62,14 +63,8 @@ class recomendation():
 
         return sliced_data[["Places","Addres","lng","ltd"]][0:5].to_json(orient="split",force_ascii=False,index=False)
 
-startup_data = {}
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    startup_data["rec"] = recomendation()
-    yield
-    startup_data.clear()
-
-app = FastAPI(lifespan=lifespan)
+startup_data["rec"] = recomendation()
+app = FastAPI()
  
 app.mount("/front", StaticFiles(directory="front"), name="front")
 
